@@ -23,7 +23,7 @@
 
 ## Watch the demo
 
-A 29-second excerpt from the experiment. Click the preview to open the video, or [download the MP4](https://raw.githubusercontent.com/josusanmartin/mac-voice-bridge/main/assets/mac-voice-bridge-demo.mp4).
+A 29-second excerpt from the experiment, with the original audio preserved. Click the preview to open the video, or [download the MP4](https://raw.githubusercontent.com/josusanmartin/mac-voice-bridge/main/assets/mac-voice-bridge-demo.mp4).
 
 <p align="center">
   <a href="assets/mac-voice-bridge-demo.mp4">
