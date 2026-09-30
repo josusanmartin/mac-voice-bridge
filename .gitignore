@@ -7,6 +7,7 @@ __pycache__/
 *.aiff
 *.mp3
 *.mp4
+!/assets/mac-voice-bridge-demo.mp4
 *.log
 *snapshot*.json
 *result*.json

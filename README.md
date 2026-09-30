@@ -1,23 +1,69 @@
-# Mac Voice Bridge
+<h1 align="center">Mac Voice Bridge</h1>
 
-An experimental, two-way audio bridge between a voice assistant on a Mac and a browser phone call, using **two independent BlackHole virtual devices**.
+<p align="center">
+  <strong>A Mac voice assistant. A browser phone call. Two independent audio paths.</strong>
+</p>
 
-In one Apple Silicon Mac experiment on September 30, 2026, a person on the phone confirmed hearing the Codex app's voice assistant (called **dot** here), and dot heard the person through Google Voice. This project explains the routing, the checks that led to that result, and how to repeat the experiment with consent and a recovery plan.
+<p align="center">
+  <a href="https://github.com/josusanmartin/mac-voice-bridge/actions/workflows/checks.yml"><img src="https://github.com/josusanmartin/mac-voice-bridge/actions/workflows/checks.yml/badge.svg" alt="Synthetic checks"></a>
+  &nbsp; · &nbsp; <a href="LICENSE">MIT licensed</a>
+  &nbsp; · &nbsp; Experimental
+</p>
 
-**Status: single-environment proof of concept.** This is not an official OpenAI or Google integration. Dot does not gain a native dialing or call-attachment capability: an operator manages the phone call, while macOS supplies the audio paths. Compatibility can change with app, browser, driver, or macOS updates.
+<p align="center">
+  <a href="#watch-the-demo">Watch the demo</a> &nbsp; / &nbsp;
+  <a href="#quick-start">Get started</a> &nbsp; / &nbsp;
+  <a href="#reusable-skill">Install the skill</a> &nbsp; / &nbsp;
+  <a href="skills/mac-voice-bridge/references/troubleshooting.md">Troubleshoot</a>
+</p>
 
-> **Hang up the phone call first, confirm it has ended, then restore audio.** Restoring CoreAudio devices does not hang up a call or stop billing. An early 65-second routing guard cut the audio before hangup during the experiment.
+<p align="center">
+  <img src="assets/readme-banner.svg" alt="Two separate BlackHole buses: dot output reaches the phone through 2ch, and phone audio returns to dot through 16ch." width="100%">
+</p>
 
-## The route
+## Watch the demo
+
+A 29-second excerpt from the experiment. Click the preview to open the video, or [download the MP4](https://raw.githubusercontent.com/josusanmartin/mac-voice-bridge/main/assets/mac-voice-bridge-demo.mp4).
+
+<p align="center">
+  <a href="assets/mac-voice-bridge-demo.mp4">
+    <img src="assets/demo-preview.jpg" alt="Watch the Mac Voice Bridge demonstration" width="230">
+  </a>
+  <br>
+  <a href="assets/mac-voice-bridge-demo.mp4"><strong>▶ Watch Mac Voice Bridge in action</strong></a>
+  <br>
+  <sub>29 seconds · MP4 with audio · caller header removed</sub>
+</p>
+
+## What this does
+
+An experimental, two-way bridge between **dot**, the voice assistant in the Codex Mac app, and **Google Voice**, using two independent BlackHole virtual devices.
+
+In one Apple Silicon Mac experiment on September 30, 2026, a person on the phone confirmed hearing dot, and dot heard the person through Google Voice. This project documents that route and packages a reusable skill to help others reproduce it.
+
+> [!NOTE]
+> **Single-environment proof of concept.** This is not an official OpenAI or Google integration. An operator manages the phone call; the assistant does not gain native dialing or call-attachment capabilities. Compatibility can change with software updates.
+
+> [!IMPORTANT]
+> **Hang up first. Restore audio second.** Confirm the phone call has ended before restoring devices. CoreAudio restoration does not end a call or stop billing. An early 65-second routing guard cut audio before hangup in the experiment.
+
+## How the audio flows
 
 ```mermaid
 flowchart LR
-    DOUT[Dot voice output] --> A[BlackHole 2ch · channels 1–2]
-    A --> GIN[Google Voice microphone]
-    GIN --> PHONE[Consenting phone participant]
-    PHONE --> GOUT[Google Voice speaker output]
-    GOUT --> B[BlackHole 16ch · channels 1–2]
-    B --> DIN[Dot voice input]
+    D["Dot · Mac voice assistant"]
+    A["BlackHole 2ch"]
+    B["BlackHole 16ch"]
+    G["Google Voice · browser"]
+    P["Consenting phone participant"]
+    D -->|Voice output| A
+    A -->|Microphone| G
+    G -->|Phone call| P
+    P -->|Return audio| G
+    G -->|Speakers| B
+    B -->|Voice input| D
+    classDef bus fill:#e9f3ef,stroke:#497867,color:#163c30
+    class A,B bus
 ```
 
 | Setting | Bridge selection |
@@ -43,6 +89,8 @@ With these defaults, the Mac's physical microphone is no longer dot's input, and
 
 ## Quick start
 
+### 1. Follow the replication guide
+
 Read the [full replication procedure](skills/mac-voice-bridge/references/workflow.md) before changing devices. Its order is:
 
 1. Run the offline checks, without a call or audio-device access.
@@ -53,12 +101,16 @@ Read the [full replication procedure](skills/mac-voice-bridge/references/workflo
 6. Only with call authorization, participant consent, and cost approval, start a short supervised call.
 7. Ask before normal hangup unless ending the call is already authorized. Hang up, verify the disconnected state, then restore and verify both macOS and browser selections.
 
+### 2. Run the safe offline checks
+
 From the repository root, these checks work on macOS, Linux, and Windows and do not play or capture audio:
 
 ```sh
 python3 skills/mac-voice-bridge/scripts/offline_check.py
 python3 -m unittest discover -s tests -v
 ```
+
+### 3. Save your audio baseline
 
 On macOS, the optional helper reads metadata and creates a private restoration baseline:
 
@@ -69,6 +121,8 @@ python3 skills/mac-voice-bridge/scripts/audio_state.py snapshot .runtime/before.
 ```
 
 Keep this output local: device names and unique identifiers can be identifying. A snapshot refuses to overwrite an existing file and is created with owner-only permissions. Capture a fresh baseline before each session, using a new filename. It does not save browser selections, gains, sample rates, aggregate devices, or permissions.
+
+### 4. Restore after hangup
 
 Preview restoration at any time; apply it **after confirming phone hangup**:
 
@@ -91,7 +145,7 @@ python3 skills/mac-voice-bridge/scripts/audio_state.py restore .runtime/before.j
 | Real phone call | Person heard dot on the phone; dot heard the person | Supervised, consenting endpoint in one environment |
 | Audio recovery | Original macOS defaults restored | Does not end a phone call |
 
-No private audio recording was made by the experiment scripts. This does not imply that the services lack their own audio processing or retention. The public project contains a sanitized account of observations, not raw transcripts, recordings, screenshots, device inventories, or original execution logs. See [test evidence and limits](docs/testing.md).
+No private audio recording was made by the experiment scripts. The demonstration above is a separately supplied excerpt approved for public sharing; its identifying header and source metadata were removed. Service audio processing and retention still apply. Raw transcripts, private device inventories, and original execution logs are not distributed. See [test evidence and limits](docs/testing.md).
 
 ## Privacy, consent, and cost
 
@@ -116,12 +170,18 @@ Check for an existing installation first; do not overwrite local customizations.
 
 A skill is the useful first package: the work combines OS routing, browser controls, consent, and recovery. A browser extension cannot supply the two CoreAudio buses by itself. A Codex plugin could distribute this skill later, but a manifest adds no current audio capability, so this release does not include a plugin scaffold or an MCP service. See [architecture and next steps](docs/architecture.md).
 
-## Documentation and official sources
+## Explore the project
 
-- [Replication procedure and installation](skills/mac-voice-bridge/references/workflow.md)
-- [Troubleshooting](skills/mac-voice-bridge/references/troubleshooting.md)
-- [Architecture and packaging assessment](docs/architecture.md)
-- [Testing, evidence, and remaining limits](docs/testing.md)
+| Guide | Start here when you want to… |
+| --- | --- |
+| [Replication procedure](skills/mac-voice-bridge/references/workflow.md) | Install the drivers and reproduce each stage |
+| [Troubleshooting](skills/mac-voice-bridge/references/troubleshooting.md) | Diagnose permissions, routing, feedback, or recovery |
+| [Architecture](docs/architecture.md) | Understand the two-bus design and packaging choices |
+| [Testing and limits](docs/testing.md) | See what was demonstrated and what remains untested |
+| [Reusable skill](skills/mac-voice-bridge/SKILL.md) | Give a local agent the workflow and recovery helpers |
+
+### Official sources
+
 - [BlackHole official project and installation](https://github.com/ExistentialAudio/BlackHole)
 - [Apple sound output settings](https://support.apple.com/guide/mac-help/change-the-sound-output-settings-mchlp2256/mac) and [sound input settings](https://support.apple.com/guide/mac-help/change-the-sound-input-settings-mchlp2567/mac)
 - [Google Voice calls, supported browsers, and rates](https://support.google.com/voice/answer/3379129)
