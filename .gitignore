@@ -1,0 +1,16 @@
+.runtime/
+__pycache__/
+*.py[cod]
+.DS_Store
+.venv/
+*.wav
+*.aiff
+*.mp3
+*.mp4
+*.log
+*snapshot*.json
+*result*.json
+*.pkg
+*.driver/
+.env
+.env.*

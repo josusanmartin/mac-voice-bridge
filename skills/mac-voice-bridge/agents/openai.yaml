@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mac Voice Bridge"
+  short_description: "Experimental two-bus Mac voice routing and recovery"
+  default_prompt: "Use $mac-voice-bridge to explain or prepare a supervised Mac voice bridge with a recovery plan."
