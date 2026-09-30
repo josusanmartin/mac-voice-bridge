@@ -23,17 +23,11 @@
 
 ## Watch the demo
 
-A 29-second excerpt from the experiment. Click the preview to open the video, or [download the MP4](https://raw.githubusercontent.com/josusanmartin/mac-voice-bridge/main/assets/mac-voice-bridge-demo.mp4).
+A 29-second excerpt from the experiment, with the original audio preserved. Press play below, or [download the MP4](https://raw.githubusercontent.com/josusanmartin/mac-voice-bridge/main/assets/mac-voice-bridge-demo.mp4).
 
-<p align="center">
-  <a href="assets/mac-voice-bridge-demo.mp4">
-    <img src="assets/demo-preview.jpg" alt="Watch the Mac Voice Bridge demonstration" width="230">
-  </a>
-  <br>
-  <a href="assets/mac-voice-bridge-demo.mp4"><strong>▶ Watch Mac Voice Bridge in action</strong></a>
-  <br>
-  <sub>29 seconds · MP4 with audio · caller header removed</sub>
-</p>
+https://github.com/user-attachments/assets/7690f9e9-e690-48a5-acbd-6cc15b0e62cb
+
+<p align="center"><sub>29 seconds · MP4 with audio · caller header removed</sub></p>
 
 ## What this does
 
